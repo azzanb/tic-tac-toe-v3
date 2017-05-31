@@ -86,18 +86,19 @@ Game.prototype.win = () => {
 		[2,5,8], //vertical
 		[0,4,8], 
 		[2,4,6] //diagonal
+		
 	];
 
 	$('.box').one("click", function() {
-		var index = $(this).index();
-		for(let i = 0; i <= wins.length; i++){
+		for(var i = 0; i < $('.box').length; i++){
 			var winsInd = wins[i];
-			var findInd = $(winsInd).index(index);
-			if( findInd > -1 && $(this).hasClass("box-filled-1")){
-				winsInd.splice(findInd, 1);
+			var findInd = $(wins[i]).index($(this).index()); //returns 0, 1, or 2
+			
+			if( findInd !== -1 && $(this).hasClass("box-filled-1") ){
+			 	winsInd.splice(findInd, 1);
 				if(winsInd.length === 0){
 					return console.log("O wins!!");
-					//Add the necessary div for the winning page
+						//Add the necessary div for the winning page
 				}
 			}
 		}
@@ -110,7 +111,6 @@ player1.click();
 player1.hover();
 player1.moves();
 player1.win();
-
 
 
 
