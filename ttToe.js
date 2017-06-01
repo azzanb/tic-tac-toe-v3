@@ -6,6 +6,7 @@ var h1 = $('<h1></h1>')[0];
 var a = $('<a></a>')[0];
 var ul = $('<ul></ul>')[0];
 var li = $('<li></li>')[0];
+var p = $('<p></p>')[0];
 
 $(div).addClass("screen screen-start");
 div.id = "start";
@@ -28,8 +29,8 @@ $('body').ready(() => {
 
 
 //Construtor Function
-function Game(){
-	
+function Game(name){
+	this.name = name;
 }
 
 Game.prototype.hover = () => { 
@@ -61,22 +62,17 @@ Game.prototype.click = () => {
 	});
 }
 
-Game.prototype.moves = () => {
-	var movesO = [];
-	var movesX = [];
+Game.prototype.moves = (n,pl) => {
+	var moves_pl = [];
 	$('.box').one("click", function() {
 		var index = $(this).index();
-
-		if($(this).hasClass("box-filled-1")){
-			movesO.push(index);
-		}
-		if($(this).hasClass("box-filled-2")){
-			movesX.push(index);
+		if($(this).hasClass("box-filled-" + n)){
+			moves_pl.push(index);
 		}
 	});
 }
 
-Game.prototype.win = () => {
+Game.prototype.win = (n,pl,winNum) => {
 	var wins = [
 		[0,1,2], 
 		[3,4,5], 
@@ -90,15 +86,21 @@ Game.prototype.win = () => {
 	];
 
 	$('.box').one("click", function() {
-		for(var i = 0; i < $('.box').length; i++){
+		for(var i = 0; i < wins.length; i++){
 			var winsInd = wins[i];
-			var findInd = $(wins[i]).index($(this).index()); //returns 0, 1, or 2
-			
-			if( findInd !== -1 && $(this).hasClass("box-filled-1") ){
+			var findInd = $.inArray($(this).index(), winsInd);
+			if( findInd > -1 && $(this).hasClass("box-filled-" + n) ){
 			 	winsInd.splice(findInd, 1);
 				if(winsInd.length === 0){
-					return console.log("O wins!!");
-						//Add the necessary div for the winning page
+					$(div).removeClass("screen-start");
+					$(div).addClass("screen-win screen-win-" + winNum);
+					div.id="finish";
+					header.append(p);
+					p.class = "message";
+					$(p).insertBefore($(a));
+					a.text = "New game";
+					$('.board').hide();
+					return $('#finish').show()
 				}
 			}
 		}
@@ -107,10 +109,14 @@ Game.prototype.win = () => {
 
 
 var player1 = new Game();
+var person = new Game("Azzan");
+console.log(person.name);
 player1.click();
 player1.hover();
-player1.moves();
-player1.win();
+player1.moves(1, "O");
+player1.moves(2, "X");
+player1.win(1, "O", "one");
+player1.win(2, "X", "two");
 
 
 
