@@ -75,8 +75,8 @@ function winner(){
 var clickOn = false;
 function clicking(){
 	if(!clickOn) return;
-	$(this).one('click');
 	$('.players').toggleClass("active");
+	
 	if($('#player1').hasClass("active")){
 		$(this).addClass("box-filled-2"); //it works, but it's is backwards	
 	}
