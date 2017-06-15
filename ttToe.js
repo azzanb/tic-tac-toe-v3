@@ -56,6 +56,7 @@ board shows, opening/winning/tie screen disappears */
 			$('.screen').removeClass('screen-win screen-win-one screen-win-two screen-win-tie');
 			$('.box').removeClass("box-filled-1 box-filled-2");
 			$('.box').removeAttr('style');
+			$('.box').removeAttr('title');
 			$('.screen').hide();
 			$('#board').show();
 			clone;
@@ -114,10 +115,10 @@ board shows, opening/winning/tie screen disappears */
 //Set function for hovering over the boxes
 		this.hover = function(){
 			$('.box').hover(function(){ 
-				if($('#player1').hasClass("active") && !$(this).hasClass('box-filled-2')){
+				if($('#player1').hasClass("active") && !$(this).hasClass('box-filled-2') && !$(this).hasClass('box-filled-1')){
 					$(this).css({backgroundImage: "url('img/o.svg')"});
 				}
-				else{
+				else if($('#player2').hasClass("active") && !$(this).hasClass('box-filled-1') && !$(this).hasClass('box-filled-2')){
 					$(this).css({backgroundImage: "url('img/x.svg')"})
 				}
 			},
@@ -128,12 +129,7 @@ board shows, opening/winning/tie screen disappears */
 
 //Loop through cloned arrays with every click to determine a winner
 		this.win = function(){
-			$('.box').click(function() {		
-				
-				if(clickTimes == 8){
-					gameTie();
-				}
-
+			$('.box').click(function(){		
 				//if for player O
 				if(clickTimes % 2 == 0){
 					for(var i = 0; i < clone.length; i++){
@@ -141,11 +137,11 @@ board shows, opening/winning/tie screen disappears */
 						var findIndex = $.inArray($(this).index(), cloneIndex);
 
 					//if the box is empty, click and splice index number from cloned wins array
-						if( findIndex > -1 && $('#player1.active')){
+						if( findIndex > -1 && $('#player1.active') && $(this).hasClass("box-filled-1")){
 							cloneIndex.splice(findIndex, 1);	
 							//clickTimes++;	
 						}
-					//when one sub-array of cloned array is empty, player wins				
+					//when one sub-array of cloned array is empty, player O wins				
 						if(cloneIndex.length === 0){ 
 							clone = wins.map(function(arr1){
 								return arr1.slice();
@@ -156,7 +152,6 @@ board shows, opening/winning/tie screen disappears */
 						}
 					}
 				}
-				
 
 				//else for player X
 				else{
@@ -165,11 +160,11 @@ board shows, opening/winning/tie screen disappears */
 						var findIndex2 = $.inArray($(this).index(), cloneIndex2);
 
 					//if the box is empty, click and splice index number from cloned wins array
-						if( findIndex2 > -1 && $('#player2.active')){
+						if( findIndex2 > -1 && $('#player2.active') && $(this).hasClass("box-filled-2")){
 							cloneIndex2.splice(findIndex2, 1);
 							//clickTimes++;		
 						}
-					//when one sub-array of cloned array is empty, player wins		
+					//when one sub-array of cloned array is empty, player X wins		
 						if(cloneIndex2.length === 0){ 
 							player2clone = wins.map(function(arr2){
 								return arr2.slice();
@@ -180,8 +175,16 @@ board shows, opening/winning/tie screen disappears */
 						}
 					}
 				}
-				clickTimes++;
-				console.log(clickTimes);
+
+				//Track the number of times boxes have been clicked by adding an attribute
+				if(typeof($(this).attr("title")) == "undefined"){
+					clickTimes++;
+				}
+				//If clicked 9 times and no winner, draw
+				if(clickTimes == 9){
+					gameTie();
+				}
+				$(this).attr("title","clicked");
 			});
 			return false; 
 		}
